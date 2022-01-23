@@ -1,17 +1,68 @@
 {
 	"pages": [{
-		"path": "pages/index/index",
+		"path": "pages/home/home",
 		"style": {
-			"navigationBarTitleText": "uni-app"
+			"navigationBarTitleText": "首页",
+			"enablePullDownRefresh": false
 		}
+
+	}, {
+		"path": "pages/shop/shop",
+		"style": {
+			"navigationBarTitleText": "商城",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/notice/notice",
+		"style": {
+			"navigationBarTitleText": "消息通知",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/my/my",
+		"style": {
+			"navigationBarTitleText": "我的",
+			"enablePullDownRefresh": false
+		}
+
 	}],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "养殖场监测",
+		"navigationBarBackgroundColor": "#1296db",
 		"backgroundColor": "#F8F8F8",
 		"app-plus": {
 			"background": "#efeff4"
 		}
+	},
+	"tabBar":{
+		"color":"#707070",
+		"selectedColor":"#1296db",
+		"list":[
+			{
+				"pagePath":"pages/home/home",
+				"text":"首页",
+				"iconPath":"static/tab_icons/home.png",
+				"selectedIconPath":"static/tab_icons/home-active.png"
+			},
+			{
+				"pagePath":"pages/shop/shop",
+				"text":"商城",
+				"iconPath":"static/tab_icons/cart.png",
+				"selectedIconPath":"static/tab_icons/cart-active.png"
+			},{
+				"pagePath":"pages/notice/notice",
+				"text":"消息",
+				"iconPath":"static/tab_icons/notice.png",
+				"selectedIconPath":"static/tab_icons/notice-active.png"
+			},{
+				"pagePath":"pages/my/my",
+				"text":"我的",
+				"iconPath":"static/tab_icons/my.png",
+				"selectedIconPath":"static/tab_icons/my-active.png"
+			}
+		]
 	}
 }
