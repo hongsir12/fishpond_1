@@ -31,6 +31,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "养殖场监测",
+		"navigationStyle":"custom",
 		"navigationBarBackgroundColor": "#1296db",
 		"backgroundColor": "#F8F8F8",
 		"app-plus": {
