@@ -1,6 +1,10 @@
 <template>
 	<view>
-		<button type="default" @click="getData">点击</button>
+		<uni-nav-bar backgroundColor="#1296db" height="190rpx" fixed>
+			<view class="navbar-title">我的鱼塘</view>
+			<view class="fill-box"></view>
+		</uni-nav-bar>
+		
 	</view>
 </template>
 
@@ -12,20 +16,27 @@
 			};
 		},
 		methods:{
-			async getData(){
-				let params = [{
-					"report_type":"全部已保存图表配置",
-					    "conditions":{"chartName":"磁盘IO分布图表配置"},
-					    "starttime":"2021-11-08 00:00:00",
-					    "overtime":"2021-11-09 12:00:00"
-				}]
-				let data = await uni.$http.post('apiQuery',params)
-				console.log(data)
-			}
+			
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-
+.navbar-title{
+	position: absolute;
+	left: 30rpx;
+	top: 90rpx;
+	font-size: 40rpx;
+	color: #ffffff;
+}
+.fill-box{
+		position: absolute;
+		left: 0;
+		bottom: -13rpx;
+		width: 100%;
+		height: 42rpx;
+		border-top-right-radius: 21rpx;
+		border-top-left-radius: 21rpx;
+		background-color: #f5f5f5;
+	}
 </style>

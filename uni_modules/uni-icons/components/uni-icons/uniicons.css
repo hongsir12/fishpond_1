@@ -661,3 +661,15 @@
 .uniui-cart:before {
   content: "\e631";
 }
+
+.uniui-my_service:before{
+  content: "\e001";
+}
+
+.uniui-my_writing:before{
+  content: "\e002";
+}
+
+.uniui-my_repair:before{
+  content: "\e003";
+}

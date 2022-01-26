@@ -1164,6 +1164,27 @@ export default {
       "font_class": "cart",
       "unicode": "e631",
       "unicode_decimal": 58929
-    }
+    },
+	{
+		"icon_id":"24813797",
+		"name":"my_service",
+		"font_class":"my_service",
+		"unicode":"e001",
+		"unicode_decimal":58930
+	},
+	{
+		"icon_id":"24813798",
+		"name":"my_writing",
+		"font_class":"my_writing",
+		"unicode":"e002",
+		"unicode_decimal":58931
+	},
+	{
+		"icon_id":"24813799",
+		"name":"my_repair",
+		"font_class":"my_repair",
+		"unicode":"e003",
+		"unicode_decimal":58931
+	}
   ]
 }

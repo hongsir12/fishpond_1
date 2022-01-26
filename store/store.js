@@ -11,6 +11,10 @@ const store = new Vuex.Store({
 			openid: '', //唯一标识
 			isAuth: false, // 是否授权
 			userInfo:{}, // 头像与昵称
+		},
+		// 用户账户信息
+		userWallet:{
+			balance_id:'', // 用户余额表的id
 		}
 	},
 	mutations: {
@@ -18,6 +22,11 @@ const store = new Vuex.Store({
 		updateUserAccount(state, userAccount) {
 			let data = Object.assign({},state.userAccount,userAccount)
 			state.userAccount = data
+		},
+		// 更新用户账户信息
+		updateUserWallet(state,userWallet){
+			let data = Object.assign({},state.userWallet,userWallet)
+			state.userWallet = data
 		}
 	}
 })

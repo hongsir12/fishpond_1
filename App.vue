@@ -116,6 +116,8 @@
 
 <style lang="scss">
 	/*每个页面公共css */
+	@import './common/uni.css';
+	@import '@/static/iconfont.css';
 	@import '@/uni_modules/uni-scss/index.scss';
 	/* #ifndef APP-NVUE */
 	@import '@/static/customicons.css';
