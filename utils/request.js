@@ -1,8 +1,8 @@
 import {$http} from './request-miniprogram'
 import moment from 'moment'
 uni.$http = $http
-// $http.baseUrl = 'http://localhost:8004/expand/report/'
-$http.baseUrl = 'http://192.168.43.43:8004/expand/report/'
+$http.baseUrl = 'http://localhost:8004/expand/report/'
+// $http.baseUrl = 'http://192.168.1.180:8004/expand/report/'
 //请求拦截器
 $http.beforeRequest = function(options) {
 	let config = {}

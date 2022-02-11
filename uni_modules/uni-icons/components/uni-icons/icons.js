@@ -1184,7 +1184,21 @@ export default {
 		"name":"my_repair",
 		"font_class":"my_repair",
 		"unicode":"e003",
-		"unicode_decimal":58931
+		"unicode_decimal":58932
+	},
+	{
+		"icon_id":"24813800",
+		"name":"my_wifi",
+		"font_class":"my_wifi",
+		"unicode":"e004",
+		"unicode_decimal":58933
+	},
+	{
+		"icon_id":"24813801",
+		"name":"my_wifi",
+		"font_class":"my_oxygen",
+		"unicode":"e005",
+		"unicode_decimal":58934
 	}
   ]
 }

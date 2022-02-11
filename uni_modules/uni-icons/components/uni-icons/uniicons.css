@@ -673,3 +673,11 @@
 .uniui-my_repair:before{
   content: "\e003";
 }
+
+.uniui-my_wifi:before{
+	content:"\e004"
+}
+
+.uniui-my_oxygen:before{
+	content:"\e005"
+}

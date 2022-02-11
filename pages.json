@@ -27,7 +27,34 @@
 			"enablePullDownRefresh": false
 		}
 
-	}],
+	}    ,{
+            "path" : "pages/addFishPond/addFishPond",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/pondDetail/pondDetail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/addAerator/addAerator",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "养殖场监测",
@@ -65,5 +92,12 @@
 				"selectedIconPath":"static/tab_icons/my-active.png"
 			}
 		]
+	},
+	"condition":{
+		"current":0,
+		"list":[{
+			"name":"addFishPond",
+			"path":"pages/addFishPond/addFishPond"
+		}]
 	}
 }
