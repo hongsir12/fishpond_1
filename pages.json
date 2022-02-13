@@ -54,6 +54,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/setAerator/setAerator",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

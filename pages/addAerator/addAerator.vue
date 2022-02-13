@@ -13,7 +13,8 @@
 		<view class="mainBody">
 			<uni-forms ref="form" label-position="top" :modelValue="formData" :rules="rules">
 				<uni-forms-item required label="增氧机ID" name="aeratorID" labelAlign="left" labelWidth="200">
-					<picker @change="changeType($event,'aeratorIDIndex','aeratorID','aeratorIDArr')" :range="aeratorIDArr">
+					<picker @change="changeType($event,'aeratorIDIndex','aeratorID','aeratorIDArr')"
+						:range="aeratorIDArr">
 						<uni-easyinput type="text" v-model="formData.aeratorID" placeholder="请选择增氧机ID" />
 					</picker>
 				</uni-forms-item>
@@ -21,7 +22,8 @@
 					<uni-easyinput type="text" v-model="formData.aeratorName" placeholder="请输入增氧机别名" />
 				</uni-forms-item>
 				<uni-forms-item required label="类型" name="aeratorType" labelAlign="left" labelWidth="200">
-					<picker @change="changeType($event,'aeratorTypeIndex','aeratorType','aeratorTypeArr')" :range="aeratorTypeArr">
+					<picker @change="changeType($event,'aeratorTypeIndex','aeratorType','aeratorTypeArr')"
+						:range="aeratorTypeArr">
 						<uni-easyinput type="text" v-model="formData.aeratorType" placeholder="请选择增氧机类型" />
 					</picker>
 				</uni-forms-item>
@@ -29,17 +31,19 @@
 					<uni-easyinput type="text" v-model="formData.aeratorPosition" placeholder="请输入增氧机位置" />
 				</uni-forms-item>
 				<uni-forms-item required label="功率" name="aeratorPower" labelAlign="left" labelWidth="200">
-					<picker @change="changeType($event,'aeratorPowerIndex','aeratorPower','aeratorPowerArr')" :range="aeratorPowerArr">
+					<picker @change="changeType($event,'aeratorPowerIndex','aeratorPower','aeratorPowerArr')"
+						:range="aeratorPowerArr">
 						<uni-easyinput type="text" v-model="formData.aeratorPower" placeholder="当前可选范围0.5~3千瓦" />
 					</picker>
 				</uni-forms-item>
 				<uni-forms-item required label="额定电压" name="ratedVoltage" labelAlign="left" labelWidth="200">
-					<picker @change="changeType($event,'ratedVoltageIndex','ratedVoltage','ratedVoltageArr')" :range="ratedVoltageArr">
+					<picker @change="changeType($event,'ratedVoltageIndex','ratedVoltage','ratedVoltageArr')"
+						:range="ratedVoltageArr">
 						<uni-easyinput type="text" v-model="formData.ratedVoltage" placeholder="请选择额定电压" />
 					</picker>
 				</uni-forms-item>
 			</uni-forms>
-			<button @click="submit">Submit</button>
+			<button @click="submit(deviceRid)">Submit</button>
 		</view>
 	</view>
 </template>
@@ -48,7 +52,7 @@
 	export default {
 		data() {
 			return {
-				rid:'', // 当前设备report_id
+				deviceRid: '', // 当前设备report_id
 				deviceCode: '',
 				formData: {
 					aeratorID: '', //增氧机输出ID
@@ -56,7 +60,7 @@
 					aeratorName: '', //增氧机别名
 					aeratorPosition: '', //增氧机位置
 					aeratorPower: '', //增氧机额定功率
-					ratedVoltage:'', //增氧机额定电压
+					ratedVoltage: '', //增氧机额定电压
 				},
 				rules: {
 					aeratorID: {
@@ -94,80 +98,82 @@
 				aeratorIDIndex: 0,
 				aeratorTypeArr: ['直流式', '涡轮式', '涌浪式', '水车式', '充气式', '变频式', '其他类型'],
 				aeratorTypeIndex: 0,
-				aeratorPowerArr:['0.5KW','1KW','1.5KW','2KW','2.5KW','3KW'],
-				aeratorPowerIndex:0,
-				ratedVoltageArr:['220V','380V'],
+				aeratorPowerArr: ['0.5KW', '1KW', '1.5KW', '2KW', '2.5KW', '3KW'],
+				aeratorPowerIndex: 0,
+				ratedVoltageArr: ['220V', '380V'],
 				ratedVoltageIndex: 0,
-				
-				queryAeratorIDArr:[],
+
+				queryAeratorIDArr: [],
 			}
 		},
 		onLoad(option) {
 			this.deviceCode = option.deviceCode
-			this.getDeviceAeratorData(this.deviceCode)
-			
+			this.deviceRid = option.deviceRid
+			this.getDeviceAeratorArrLength(this.deviceRid)
+
 		},
 		methods: {
-			generateAeratorID(length){
-				for(let i = 0;i<4-length;i++){
-					let num = Math.round(Math.random()*(999-100)+100)
-					console.log(num);
+			generateAeratorID(length) {
+				for (let i = 0; i < 4 - length; i++) {
+					let num = Math.round(Math.random() * (999 - 100) + 100)
 					this.aeratorIDArr.push(`ID${num}`)
 				}
 			},
-			async getDeviceAeratorData(deviceCode) {
+			// 获取当前设备全部增氧机信息
+			async getDeviceAeratorArrLength(deviceRid) {
 				let queryParams = [{
-					report_type: '鱼塘设备表',
-					conditions: {
-						deviceCode: deviceCode
-					}
+					report_type: '增氧机信息表',
+					conditions:{deviceRid:deviceRid}
 				}]
 				let queryRes = await uni.$http.post('apiQuery', queryParams)
-				this.rid = queryRes.data.list[0].report_id
-				let aeratorIDArr = []
-				console.log(JSON.parse(queryRes.data.list[0].report_data).aerator);
-				if (typeof JSON.parse(queryRes.data.list[0].report_data).aerator == 'string') {
-					aeratorIDArr = JSON.parse(JSON.parse(queryRes.data.list[0].report_data).aerator)
+				if(queryRes.code=='2000'){
+					this.generateAeratorID(queryRes.data.total)
+				}else{
+					this.generateAeratorID(0)
 				}
-				this.queryAeratorIDArr = aeratorIDArr
-				this.generateAeratorID(aeratorIDArr.length)
+				
 			},
 			// 下拉框选择类型
-			changeType(e,typeIndex,formItem,arr){
+			changeType(e, typeIndex, formItem, arr) {
 				this[typeIndex] = e.target.value
 				this.formData[formItem] = this[arr][e.target.value]
 			},
 			// 触发提交表单
-			submit() {
+			submit(deviceRid) {
 				this.$refs.form.validate().then(async res => {
 					console.log('表单数据信息：', res);
-					let obj = {aeratorID:res.aeratorID,aeratorName:res.aeratorName,isOnline:false,aeratorType:res.aeratorType}
-					this.queryAeratorIDArr.push(obj)
-					let updateParams = [{
-						report_id:this.rid,
-						report_data:{aerator:this.queryAeratorIDArr}
-					}]
-					let updateRes = await uni.$http.post('apiUpdate',updateParams)
-					if(updateRes.code=='2000'){
-						res.openID = this.$store.state.userAccount.openid
-						res.isOnline = false
-						let insertParams = [{
-							report_type:'增氧机信息表',
-							report_data:res,
-							report_time: this.$moment().format('YYYY-MM-DD HH:mm:ss'),
-						}]
-						let insertRes = await uni.$http.post('apiInsert',insertParams)
-						if(insertRes.code=='2000'){
-							uni.navigateBack({
-								delta: 1
-							})
-						}
+					res.deviceRid = deviceRid //增氧机对应设备
+					res.openID = this.$store.state.userAccount.openid
+					res.isOnline = false //是否在线
+					res.ampereRange = {  // 电流范围
+						min: 0,
+						max: 0
 					}
+					res.ampereMonitorStatus = false //电流监测状态
+					res.overCurrentShutdownStatus = false //过流停机开关
+					res.shutdownAlarmStatus = false //停机告警开关
+					// 插入新增增氧机信息
+					let insertParams = [{
+						report_type: '增氧机信息表',
+						report_data: res,
+						report_time: this.$moment().format('YYYY-MM-DD HH:mm:ss'),
+					}]
+					let insertRes = await uni.$http.post('apiInsert', insertParams)
+					if (insertRes.code == '2000') {
+						
+						uni.navigateBack({
+							delta: 1
+						})
+					}
+					
+
+
+
 				}).catch(err => {
 					console.log('表单错误信息：', err);
 				})
 			},
-			
+
 			back() {
 				uni.navigateBack({
 					delta: 1
