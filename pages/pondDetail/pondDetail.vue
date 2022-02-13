@@ -70,7 +70,7 @@
 			</uni-popup-dialog>
 		</uni-popup>
 
-		<uni-popup ref="aeratorInfoPopup" type="bottom">
+		<uni-popup ref="aeratorInfoPopup" type="bottom"  @maskClick="closeaeratorInfoPopup">
 			<view class="aeratorInfoPanel">
 				<view class="panel-title uni-inline-item">
 					<view class="title-text uni-flex uni-column">
@@ -151,7 +151,7 @@
 			this.pondName = option.pondName
 			this.fishPondRid = option.rid
 			// 获取鱼塘拥有的设备信息
-			this.getDevicesData(this.fishPondRid)
+			// this.getDevicesData(this.fishPondRid)
 		},
 		onShow() {
 			this.getDevicesData(this.fishPondRid)
@@ -221,6 +221,7 @@
 			},
 			// 获取鱼塘设备信息
 			async getDevicesData(fishPondRid) {
+				// 查询该鱼塘下全部设备信息
 				let queryParams = [{
 					report_type: '鱼塘设备表',
 					conditions:{fishPondRid:fishPondRid}
@@ -236,22 +237,44 @@
 							type:JSON.parse(device.report_data).type,
 						}					
 					})
-					console.log(devices)
-					devices.forEach(async device=>{
-						let aeratorInfoList = await this.getDevicesAeratorData(device.deviceRid)
-						if(aeratorInfoList.length!==0){
-							aeratorInfoList = aeratorInfoList.map(aeratorInfo=>{
-								let obj = _.omit(JSON.parse(aeratorInfo.report_data),['openID'])
-								obj.aeratorRid = aeratorInfo.report_id
-								return obj
-							})
-						}
-						
-						device.aerators = aeratorInfoList
+					// 再根据设备信息去查询该鱼塘全部设备下的全部增氧机信息
+					let queryAeratorsParams = devices.map(device=>{
+						let obj = {report_type:'增氧机信息表',conditions:{deviceRid:device.deviceRid}}
+						return obj
 					})
-					setTimeout(() => {
+					let queryAeratorRes = await uni.$http.post('apiQuery',queryAeratorsParams)
+					if(queryAeratorRes.code=='2000'){
+						let aeratorInfoList = queryAeratorRes.data.list.map(aeratorInfo=>{
+							let obj = _.omit(JSON.parse(aeratorInfo.report_data),['openID'])
+							obj.aeratorRid = aeratorInfo.report_id
+							return obj
+						})
+						console.log(aeratorInfoList)
+						devices.forEach(device=>{
+							device.aerators = aeratorInfoList.filter(aeratorInfo=>aeratorInfo.deviceRid==device.deviceRid)
+						})
+						console.log(devices);
 						this.devices = devices
-					}, 800)
+					}else{
+						this.devices = devices
+					}
+
+					
+					// devices.forEach(async device=>{
+					// 	let aeratorInfoList = await this.getDevicesAeratorData(device.deviceRid)
+					// 	if(aeratorInfoList.length!==0){
+					// 		aeratorInfoList = aeratorInfoList.map(aeratorInfo=>{
+					// 			let obj = _.omit(JSON.parse(aeratorInfo.report_data),['openID'])
+					// 			obj.aeratorRid = aeratorInfo.report_id
+					// 			return obj
+					// 		})
+					// 	}
+						
+					// 	device.aerators = aeratorInfoList
+					// })
+					// setTimeout(() => {
+						// this.devices = devices
+					// }, 800)
 				}
 			},
 			// 获取设备所含增氧机Rid信息
@@ -279,8 +302,12 @@
 				}
 			},
 			async showAeratorInfo(aeratorInfo) {
+				this.aeratorInfoPanel = []
+				aeratorInfo.shutdownAlarmStatus = JSON.parse(aeratorInfo.shutdownAlarmStatus)
+				aeratorInfo.ampereMonitorStatus = JSON.parse(aeratorInfo.ampereMonitorStatus)
+				aeratorInfo.overCurrentShutdownStatus = JSON.parse(aeratorInfo.overCurrentShutdownStatus)
 				this.aeratorInfoPanel = aeratorInfo
-				console.log(this.aeratorInfoPanel);
+				console.log('弹出面板信息',this.aeratorInfoPanel);
 				this.$refs.aeratorInfoPopup.open()
 			},
 			// 显示移除增氧机确认弹框
@@ -297,6 +324,12 @@
 				this.getDevicesData(this.fishPondRid)
 				this.$refs.removePopup.close()
 				this.$refs.aeratorInfoPopup.close()
+			},
+			closeaeratorInfoPopup(){
+				this.getDevicesData(this.fishPondRid)
+				setTimeout(()=>{
+					this.aeratorInfoPanel = []
+				},200)
 			},
 			// 开关状态变化
 			async switchChange(e, aeratorRid, prop) {
