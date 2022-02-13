@@ -9,7 +9,7 @@ const store = new Vuex.Store({
 		userAccount: {
 			report_id:'', // 对应数据库中微信用户表的id
 			openid: '', //唯一标识
-			isAuth: false, // 是否授权
+			isAuth: true, // 是否授权
 			userInfo:{}, // 头像与昵称
 		},
 		// 用户账户信息

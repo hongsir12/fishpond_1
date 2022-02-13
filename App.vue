@@ -68,7 +68,8 @@
 										let insertRes = await uni.$http.post('apiInsert',
 											insertParams)
 										this.$store.commit('updateUserAccount', {
-											report_id: insertRes.data.list[0].report_id
+											report_id: insertRes.data.list[0].report_id,
+											isAuth: false,
 										})
 										uni.hideLoading()
 										uni.switchTab({
@@ -81,6 +82,9 @@
 										let queryResData = JSON.parse(queryRes.data.list[0]
 											.report_data)
 										if (_.isEmpty(JSON.parse(queryResData.userInfo))) { //用户信息为空，未授权，跳转至授权页面
+										this.$store.commit('updateUserAccount', {
+											isAuth: false,
+										})
 											console.log('老用户未授权');
 											uni.hideLoading()
 											uni.reLaunch({

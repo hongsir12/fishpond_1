@@ -56,7 +56,20 @@
 				fishPondInfo:[],
 			};
 		},
+		onLoad() {
+			console.log('homeLoad');
+		},
 		onShow() {
+			console.log(this.$store.state.userAccount.isAuth);
+			if(!this.$store.state.userAccount.isAuth){
+				uni.showModal({
+					title:"温馨提示",
+					content:"请先授权登录，否则将无法使用完整功能",
+					showCancel:false,
+					
+				})
+				return 
+			}
 			this.getPondInfo()
 		},
 		watch: {
@@ -68,6 +81,15 @@
 		},
 		methods: {
 			trigger(e) {
+				if(!this.$store.state.userAccount.isAuth){
+					uni.showModal({
+						title:"温馨提示",
+						content:"请先授权登录，否则将无法使用完整功能",
+						showCancel:false,
+						
+					})
+					return 
+				}
 				console.log(e);
 				this.fab.content[e.index].active = true
 				uni.navigateTo({
@@ -76,6 +98,8 @@
 			},
 			// 获取鱼塘信息
 			async getPondInfo() {
+				
+				console.log(this.$store.state.userAccount.openid);
 				let queryParams = [{
 					report_type: '鱼塘信息表',
 					conditions: {
@@ -84,6 +108,7 @@
 				}]
 				let queryRes = await uni.$http.post('apiQuery', queryParams)
 				if(queryRes.code=='5000'){
+					this.fishPondInfo = []
 					return
 				}else{
 					this.fishPondInfo = queryRes.data.list.map(e=>{
