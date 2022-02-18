@@ -23,15 +23,16 @@
 					<uni-collapse-item title-border="none" :border="false" v-for="(device,index) in devices"
 						:key="index">
 						<template v-slot:title>
-							<view class="device-title">
+							<view class="device-title" @longpress="toDeviceDetail(device.deviceRid)">
 								<uni-icons type="my_wifi" color="#00aa00" size="30"></uni-icons>
 								<view class="device-title-text">
 									<view class="device-code">
 										<text>{{device.order}}</text>
-										:{{device.code}}
+										:{{device.name?device.name:device.code}}
 									</view>
 									<view class="device-type">
 										{{device.type}}
+										<text v-show="device.name">({{device.code}})</text>
 									</view>
 								</view>
 							</view>
@@ -42,7 +43,7 @@
 								<uni-list-item v-if="" v-for="(aerator,i) in device.aerators" :key="i"
 									:show-extra-icon="true"
 									:extra-icon="{color: '#1296db',size: '33',type: 'my_oxygen'}">
-									<view slot="body" class="slot-box" @click="showAeratorInfo(aerator)">
+									<view slot="body" class="slot-box" @click="showAeratorInfo(aerator.aeratorRid)">
 										<view class="uni-flex uni-column">
 											<view>{{aerator.aeratorName}}</view>
 											<view style="font-size: 28rpx;color:#7c7d7f">{{aerator.aeratorID}}</view>
@@ -86,14 +87,10 @@
 				</view>
 				<view class="panel-body">
 					<uni-list>
-						<uni-list-item>
-							<view slot="body" class="slot-box uni-inline-item">
-								<view>监测运行电流</view>
-								<switch :checked="aeratorInfoPanel.ampereMonitorStatus"
-									@change="switchChange($event,aeratorInfoPanel.aeratorRid,'ampereMonitorStatus')" />
-							</view>
-						</uni-list-item>
-						<uni-list-item>
+						<uni-list-item title="监测运行电流" note="监测设备运行电流,超过或低于设定的范围都会主动提醒" :show-switch="true" :switchChecked="aeratorInfoPanel.ampereMonitorStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'ampereMonitorStatus')" ></uni-list-item>
+						<uni-list-item title="过流停机" note="如果开启过流停机,当运行电流超过监测范围上限时,会自动关闭该增氧机" :show-switch="true" :switchChecked="aeratorInfoPanel.overCurrentShutdownStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'overCurrentShutdownStatus')"></uni-list-item>
+						<uni-list-item title="停机警告" note="运行电流低于设定值时,会主动电话告警" :show-switch="true" :switchChecked="aeratorInfoPanel.shutdownAlarmStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'shutdownAlarmStatus')" ></uni-list-item>
+						<!-- <uni-list-item>
 							<view slot="body" class="slot-box uni-inline-item">
 								<view>过流停机</view>
 								<switch :checked="aeratorInfoPanel.overCurrentShutdownStatus"
@@ -106,20 +103,24 @@
 								<switch :checked="aeratorInfoPanel.shutdownAlarmStatus"
 									@change="switchChange($event,aeratorInfoPanel.aeratorRid,'shutdownAlarmStatus')" />
 							</view>
-						</uni-list-item>
+						</uni-list-item> -->
 					</uni-list>
 					<view class="btn-group">
-						<view class="btn-item" @click="toSetAerator(aeratorInfoPanel.aeratorRid)">
+						<view class="btn-item" @click="toSetAerator(aeratorInfoPanel.aeratorRid,0)">
 							<uni-icons type="gear-filled" size="30"></uni-icons>
 							<text>设置</text>
 						</view>
-						<view class="btn-item">
+						<view class="btn-item" @click="toSetAerator(aeratorInfoPanel.aeratorRid,1)">
 							<uni-icons type="gear-filled" size="30"></uni-icons>
 							<text>定时开关</text>
 						</view>
-						<view class="btn-item" style="flex:1;background-color: #18BC37;color: #ffffff;">
+						<view class="btn-item" v-if="!aeratorInfoPanel.isOnline" style="flex:1;background-color: #18BC37;color: #ffffff;" @click="changOnline(aeratorInfoPanel.aeratorRid,aeratorInfoPanel.isOnline)">
 							<uni-icons type="gear" size="30"></uni-icons>
 							<text>立即启动</text>
+						</view>
+						<view class="btn-item" v-if="aeratorInfoPanel.isOnline" style="flex:1;background-color: #ee0a24;color: #ffffff;"  @click="changOnline(aeratorInfoPanel.aeratorRid,aeratorInfoPanel.isOnline)">
+							<uni-icons type="gear" size="30"></uni-icons>
+							<text>立即停止</text>
 						</view>
 					</view>
 				</view>
@@ -127,7 +128,7 @@
 		</uni-popup>
 	
 		<uni-popup ref="removePopup" type="dialog">
-		    <uni-popup-dialog mode="base" title="温馨提示" content="确认移除增氧机？" :duration="2000" @confirm="confirmRemoveAerator(removedAeratorRid)"></uni-popup-dialog>
+		    <uni-popup-dialog mode="base" title="温馨提示" content="确认移除增氧机？" :duration="2000" @confirm="confirmRemoveAerator(aeratorInfoPanel.aeratorRid,aeratorInfoPanel.isOnline)"></uni-popup-dialog>
 		</uni-popup>
 		
 	</view>
@@ -143,6 +144,7 @@
 				devices: [], // 设备列表
 				aeratorInfoPanel: {}, //增氧机信息弹框面板数据
 				removedAeratorRid:'', //被移除的增氧机的rid
+				currentSettingAeratorRid:'', // 当前前往设置的增氧机rid
 			}
 		},
 
@@ -155,6 +157,7 @@
 		},
 		onShow() {
 			this.getDevicesData(this.fishPondRid)
+			this.showAeratorInfo(this.currentSettingAeratorRid)
 		},
 		methods: {
 			back() {
@@ -196,21 +199,39 @@
 						report_data: {
 							openID: this.openid,
 							fishPondRid: this.fishPondRid,
+							fishPondName:this.pondName,
 							code: value,
 							name: '',
 							type: type,
+							warrantyExDate:'2024-01-23', //质保到期日
+							serviceExDate:'2023-04-12',  //服务到期日
+							serviceHotline:'13510424336', //服务热线
+							outageAlarmSetting:'未设置',  //断电告警设置
+							inputVoltCheckStatus:false,  //输入电压检测
+							
 						},
 						report_time: this.$moment().format('YYYY-MM-DD HH:mm:ss'),
 					}]
 					let insertRes = await uni.$http.post('apiInsert', insertParams)
-
-					this.getDevicesData(this.fishPondRid)
-					uni.showToast({
-						title: '添加成功',
-						icon: 'success'
-					})
+					if(insertRes.code=='2000'){
+						uni.showToast({
+							title: '添加成功',
+							icon: 'success'
+						})
+						let insertLogParams = [{
+							report_type:'操作记录表',
+							report_data:{
+								operationLog:`添加了${type}:${value}`
+							},
+							report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
+						}]
+						await uni.$http.post('apiInsert',insertLogParams)
+					}
+					// this.getDevicesData(this.fishPondRid)
+					
 
 					this.$refs.addDevicePopup.close()
+					this.toDeviceDetail(insertRes.data.list[0].report_id)
 				} else {
 					uni.showToast({
 						title: '添加失败',
@@ -247,13 +268,15 @@
 						let aeratorInfoList = queryAeratorRes.data.list.map(aeratorInfo=>{
 							let obj = _.omit(JSON.parse(aeratorInfo.report_data),['openID'])
 							obj.aeratorRid = aeratorInfo.report_id
+							obj.isOnline = typeof obj.isOnline =='string'?JSON.parse(obj.isOnline):obj.isOnline
 							return obj
 						})
 						console.log(aeratorInfoList)
 						devices.forEach(device=>{
+							
 							device.aerators = aeratorInfoList.filter(aeratorInfo=>aeratorInfo.deviceRid==device.deviceRid)
 						})
-						console.log(devices);
+						console.log('鱼塘拥有设备',devices);
 						this.devices = devices
 					}else{
 						this.devices = devices
@@ -275,6 +298,9 @@
 					// setTimeout(() => {
 						// this.devices = devices
 					// }, 800)
+				}else{
+					console.log('该鱼塘无设备');
+					this.devices = []
 				}
 			},
 			// 获取设备所含增氧机Rid信息
@@ -301,11 +327,21 @@
 					return JSON.parse(queryRes.data.list[0].report_data)
 				}
 			},
-			async showAeratorInfo(aeratorInfo) {
-				this.aeratorInfoPanel = []
-				aeratorInfo.shutdownAlarmStatus = JSON.parse(aeratorInfo.shutdownAlarmStatus)
-				aeratorInfo.ampereMonitorStatus = JSON.parse(aeratorInfo.ampereMonitorStatus)
-				aeratorInfo.overCurrentShutdownStatus = JSON.parse(aeratorInfo.overCurrentShutdownStatus)
+			async showAeratorInfo(aeratorRid) {
+				this.aeratorInfoPanel = {aeratorName:'',ratedVoltage:'',aeratorID:''}
+				if(!aeratorRid){
+					return
+				}
+				let queryParams = [{
+					report_id:aeratorRid
+				}]
+				let {data:queryRes} = await uni.$http.post('apiQuery',queryParams)
+				let aeratorInfo = JSON.parse(queryRes.list[0].report_data)
+				aeratorInfo.shutdownAlarmStatus = typeof aeratorInfo.shutdownAlarmStatus=='string'?JSON.parse(aeratorInfo.shutdownAlarmStatus) : aeratorInfo.shutdownAlarmStatus
+				aeratorInfo.ampereMonitorStatus = typeof aeratorInfo.ampereMonitorStatus=='string'?JSON.parse(aeratorInfo.ampereMonitorStatus) : aeratorInfo.ampereMonitorStatus
+				aeratorInfo.overCurrentShutdownStatus = typeof aeratorInfo.overCurrentShutdownStatus=='string'?JSON.parse(aeratorInfo.overCurrentShutdownStatus) : aeratorInfo.overCurrentShutdownStatus
+				aeratorInfo.isOnline = typeof aeratorInfo.isOnline=='string'?JSON.parse(aeratorInfo.isOnline) : aeratorInfo.isOnline
+				aeratorInfo.aeratorRid = queryRes.list[0].report_id
 				this.aeratorInfoPanel = aeratorInfo
 				console.log('弹出面板信息',this.aeratorInfoPanel);
 				this.$refs.aeratorInfoPopup.open()
@@ -321,34 +357,78 @@
 					aeratorRid
 				]
 				let delRes = await uni.$http.post('apiDelete', deleteParams)
-				this.getDevicesData(this.fishPondRid)
-				this.$refs.removePopup.close()
-				this.$refs.aeratorInfoPopup.close()
+				if(delRes.code=='2000'){
+					this.getDevicesData(this.fishPondRid)
+					this.$refs.removePopup.close()
+					this.currentSettingAeratorRid = ''
+					this.$refs.aeratorInfoPopup.close()
+					let insertParams = [{
+						report_type:'操作记录表',
+						report_data:{
+							operationLog:`移除了增氧机:${this.aeratorInfoPanel.aeratorID}`
+						},
+						report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
+					}]
+					await uni.$http.post('apiInsert',insertParams)
+				}
+				
 			},
 			closeaeratorInfoPopup(){
+				this.currentSettingAeratorRid = ''
 				this.getDevicesData(this.fishPondRid)
 				setTimeout(()=>{
-					this.aeratorInfoPanel = []
+					this.aeratorInfoPanel = {}
 				},200)
 			},
 			// 开关状态变化
 			async switchChange(e, aeratorRid, prop) {
 				let updateParams = [{
 					report_id:aeratorRid,
-					report_data:{[prop]:e.target.value}
+					report_data:{[prop]:e.value}
 				}]
 				let updateRes = await uni.$http.post('apiUpdate',updateParams)
+			},
+			// 开启关闭增氧机
+			async changOnline(aeratorRid,isOnline){
+				this.aeratorInfoPanel.isOnline = !JSON.parse(isOnline)
+				let updateParams = [{
+					report_id:aeratorRid,
+					report_data:{isOnline:!JSON.parse(isOnline)}
+				}]
+				let updateRes = await uni.$http.post('apiUpdate',updateParams)
+				if(updateRes.code='2000'){
+					//插入操作记录
+					let text = '关闭'
+					if(!JSON.parse(isOnline)){
+						text = '开启'
+					}
+					let insertParams = [{
+						report_type:'操作记录表',
+						report_data:{
+							operationLog:`${text}了增氧机:${this.aeratorInfoPanel.aeratorID}`
+						},
+						report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
+					}]
+					await uni.$http.post('apiInsert',insertParams)
+				}
 			},
 			// 跳转至添加增氧机页面
 			toAddAerator(deviceCode, deviceRid) {
 				uni.navigateTo({
-					url: `../addAerator/addAerator?deviceCode=${deviceCode}&deviceRid=${deviceRid}`
+					url: `../../aerator/addAerator/addAerator?deviceCode=${deviceCode}&deviceRid=${deviceRid}`
 				})
 			},
 			// 跳转至设置增氧机页面
-			toSetAerator(aeratorRid){
+			toSetAerator(aeratorRid,current){
+				this.currentSettingAeratorRid = aeratorRid
+				this.$refs.aeratorInfoPopup.close()
 				uni.navigateTo({
-					url: `../setAerator/setAerator?aeratorRid=${aeratorRid}`
+					url: `../../aerator/setAerator/setAerator?aeratorRid=${aeratorRid}&current=${current}`
+				})
+			},
+			toDeviceDetail(deviceRid){
+				uni.navigateTo({
+					url: `../../device/deviceDetail/deviceDetail?deviceRid=${deviceRid}`
 				})
 			}
 		}

@@ -152,6 +152,8 @@
 					res.ampereMonitorStatus = false //电流监测状态
 					res.overCurrentShutdownStatus = false //过流停机开关
 					res.shutdownAlarmStatus = false //停机告警开关
+					res.shutdownAlarmVal = ''
+					res.timeSwitch = []
 					// 插入新增增氧机信息
 					let insertParams = [{
 						report_type: '增氧机信息表',

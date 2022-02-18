@@ -15,7 +15,9 @@ const store = new Vuex.Store({
 		// 用户账户信息
 		userWallet:{
 			balance_id:'', // 用户余额表的id
-		}
+		},
+		//存放本次登录后的相关操作
+		// operationLog:[],
 	},
 	mutations: {
 		// 更新用户账号信息
@@ -27,7 +29,15 @@ const store = new Vuex.Store({
 		updateUserWallet(state,userWallet){
 			let data = Object.assign({},state.userWallet,userWallet)
 			state.userWallet = data
-		}
+		},
+		// updateOperaTionLog(state,val){
+		// 	state.operationLog.push(val)
+		// }
+	},
+	actions:{
+		// updateOperaTionLog(context,val){
+		// 	context.commit('updateOperaTionLog',val)
+		// }
 	}
 })
 

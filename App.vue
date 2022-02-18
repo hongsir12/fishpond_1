@@ -15,7 +15,7 @@
 		onShow() {
 			console.log('App Show')
 		},
-		onHide() {
+		async onHide() {
 			console.log('App Hide')
 		},
 		methods:{
@@ -73,7 +73,7 @@
 										})
 										uni.hideLoading()
 										uni.switchTab({
-											url: '/pages/my/my'
+											url: '/pages/my/my/my'
 										})
 									} else { //查询到说明老用户，查看用户信息是否有值
 										this.$store.commit('updateUserAccount', {
@@ -88,7 +88,7 @@
 											console.log('老用户未授权');
 											uni.hideLoading()
 											uni.reLaunch({
-												url: `/pages/my/my`
+												url: `/pages/my/my/my`
 											})
 										} else { // 用户信息不为空
 											console.log('用户已授权');

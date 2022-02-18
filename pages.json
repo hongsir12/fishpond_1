@@ -1,34 +1,34 @@
 {
 	"pages": [{
-		"path": "pages/home/home",
+		"path": "pages/home/home/home",
 		"style": {
 			"navigationBarTitleText": "首页",
 			"enablePullDownRefresh": false
 		}
 
 	}, {
-		"path": "pages/shop/shop",
+		"path": "pages/shop/shop/shop",
 		"style": {
 			"navigationBarTitleText": "商城",
 			"enablePullDownRefresh": false
 		}
 
 	}, {
-		"path": "pages/notice/notice",
+		"path": "pages/notice/notice/notice",
 		"style": {
 			"navigationBarTitleText": "消息通知",
 			"enablePullDownRefresh": false
 		}
 
 	}, {
-		"path": "pages/my/my",
+		"path": "pages/my/my/my",
 		"style": {
 			"navigationBarTitleText": "我的",
 			"enablePullDownRefresh": false
 		}
 
 	}    ,{
-            "path" : "pages/addFishPond/addFishPond",
+            "path" : "pages/home/pond/addFishPond/addFishPond",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -37,7 +37,7 @@
             
         }
         ,{
-            "path" : "pages/pondDetail/pondDetail",
+            "path" : "pages/home/pond/pondDetail/pondDetail",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -46,7 +46,7 @@
             
         }
         ,{
-            "path" : "pages/addAerator/addAerator",
+            "path" : "pages/home/aerator/addAerator/addAerator",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -55,7 +55,25 @@
             
         }
         ,{
-            "path" : "pages/setAerator/setAerator",
+            "path" : "pages/home/aerator/setAerator/setAerator",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/home/device/deviceDetail/deviceDetail",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/operationLog/operationLog",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -79,23 +97,23 @@
 		"selectedColor":"#1296db",
 		"list":[
 			{
-				"pagePath":"pages/home/home",
+				"pagePath":"pages/home/home/home",
 				"text":"首页",
 				"iconPath":"static/tab_icons/home.png",
 				"selectedIconPath":"static/tab_icons/home-active.png"
 			},
 			{
-				"pagePath":"pages/shop/shop",
+				"pagePath":"pages/shop/shop/shop",
 				"text":"商城",
 				"iconPath":"static/tab_icons/cart.png",
 				"selectedIconPath":"static/tab_icons/cart-active.png"
 			},{
-				"pagePath":"pages/notice/notice",
+				"pagePath":"pages/notice/notice/notice",
 				"text":"消息",
 				"iconPath":"static/tab_icons/notice.png",
 				"selectedIconPath":"static/tab_icons/notice-active.png"
 			},{
-				"pagePath":"pages/my/my",
+				"pagePath":"pages/my/my/my",
 				"text":"我的",
 				"iconPath":"static/tab_icons/my.png",
 				"selectedIconPath":"static/tab_icons/my-active.png"
@@ -106,7 +124,7 @@
 		"current":0,
 		"list":[{
 			"name":"addFishPond",
-			"path":"pages/addFishPond/addFishPond"
+			"path":"pages/home/pond/addFishPond/addFishPond"
 		}]
 	}
 }

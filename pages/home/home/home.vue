@@ -17,6 +17,10 @@
 						<view class="fishSpecies">
 							{{item.fishSpecies}}
 						</view>
+						<view class="runingAeratorCount">
+							<text v-show="item.runingAeratorCount" style="color: #4ba92f;">{{`${item.runingAeratorCount}个运行中的增氧机`}}</text>
+							<text v-show="!item.runingAeratorCount" style="color: #999;">无运行中的增氧机</text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -60,8 +64,8 @@
 			console.log('homeLoad');
 		},
 		onShow() {
-			console.log(this.$store.state.userAccount.isAuth);
 			if(!this.$store.state.userAccount.isAuth){
+				this.fishPondInfo = []
 				uni.showModal({
 					title:"温馨提示",
 					content:"请先授权登录，否则将无法使用完整功能",
@@ -93,13 +97,11 @@
 				console.log(e);
 				this.fab.content[e.index].active = true
 				uni.navigateTo({
-					url: '../addFishPond/addFishPond'
+					url: '../pond/addFishPond/addFishPond'
 				})
 			},
 			// 获取鱼塘信息
 			async getPondInfo() {
-				
-				console.log(this.$store.state.userAccount.openid);
 				let queryParams = [{
 					report_type: '鱼塘信息表',
 					conditions: {
@@ -111,18 +113,73 @@
 					this.fishPondInfo = []
 					return
 				}else{
-					this.fishPondInfo = queryRes.data.list.map(e=>{
+					
+					let fishPondInfo = queryRes.data.list.map(e=>{
 						let obj = JSON.parse(e.report_data).info
 						obj.fishPondName = JSON.parse(e.report_data).fishPondName
 						obj.reportID = e.report_id
+						obj.runingAeratorCount = 0
 						return obj
 						})
-					console.log(this.fishPondInfo);
+					
+					// 全部运行中的增氧机列表
+					let aeratorList = await this.getAeratorInfo()
+					if(aeratorList.length==0){
+						this.fishPondInfo = fishPondInfo
+						return 
+					}
+					// 计算返回每个鱼塘拥有的运行中的增氧机数量
+					let count = await this.pondHasAeratorCount(aeratorList)
+					let pondCountMap = {}
+					for(let rec of count){
+						pondCountMap[`${rec.pondRid}`] = pondCountMap[`${rec.pondRid}`]||0
+						pondCountMap[`${rec.pondRid}`] +=  rec.aeratorsCount
+					}
+					fishPondInfo.forEach(e=>{
+						e.runingAeratorCount = pondCountMap[`${e.reportID}`] || 0
+					})
+					this.fishPondInfo = fishPondInfo
 				}
+			},
+			// 获取运行中的增氧机信息
+			async getAeratorInfo(){
+				let queryParams = [{
+					report_type:'增氧机信息表',
+					conditions:{isOnline:'true'}
+				}]
+				let queryRes = await uni.$http.post('apiQuery',queryParams)
+				if(queryRes.code=='2000'){
+					let aeratorList = queryRes.data.list.map(e=>{
+						let obj = {deviceRid:JSON.parse(e.report_data).deviceRid}
+						return obj
+					});
+					return aeratorList
+				}else{
+					return []
+				}
+				
+			},
+			// 获取鱼塘拥有的运行中的增氧机数量
+			async pondHasAeratorCount(aeratorList){
+				let queryParams = aeratorList.map(e=>{
+					return {report_id:e.deviceRid}
+				})
+				let queryRes = await uni.$http.post('apiQuery',queryParams)
+				let deviceHasAeratorList = queryRes.data.list.map(device=>{
+					return {rid:device.report_id,pondRid:JSON.parse(device.report_data).fishPondRid}
+				})
+				let tmp = {}
+				for(let rec of aeratorList){			
+					tmp[`${rec.deviceRid}`] = tmp[`${rec.deviceRid}`] || 0
+					tmp[`${rec.deviceRid}`]+=1
+				}
+				return deviceHasAeratorList.map(e=>{					
+					return {pondRid:e.pondRid,aeratorsCount:tmp[`${e.rid}`]}
+				})
 			},
 			toPondDetail(pondName,rid){
 				uni.navigateTo({
-					url: `../pondDetail/pondDetail?pondName=${pondName}&rid=${rid}`
+					url: `../pond/pondDetail/pondDetail?pondName=${pondName}&rid=${rid}`
 				})
 			}
 
@@ -177,6 +234,13 @@
 				flex:1;
 				display: flex;
 				align-items: center;
+				justify-content: space-between;
+				.fishSpecies{
+					
+				}
+				.runingAeratorCount{
+					font-size: 27rpx;
+				}
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 	<view>
 		<uni-nav-bar color="#ffffff" backgroundColor="#1296db" height="280rpx" fixed>
 			<view class="user-avatar-box" @click="login">
-				<image class="avatar" :src="userInfo.avatar?userInfo.avatar:'../../static/weixin_login.png'"></image>
+				<image class="avatar" :src="userInfo.avatar?userInfo.avatar:'../../../static/weixin_login.png'"></image>
 				<view class="userInfo">
 					<view>{{userInfo.nickName?userInfo.nickName:'授权登录'}}</view>
 				</view>
@@ -30,7 +30,7 @@
 
 			<uni-list>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_repair'}" title="特约维修点" link to="/pages/notice/notice" ></uni-list-item>
-				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'settings-filled'}" title="近期设备操作" link to="/pages/notice/notice" ></uni-list-item>
+				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'settings-filled'}" title="近期设备操作" link to="/pages/my/operationLog/operationLog" ></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_service'}" title="联系客服" link to="/pages/notice/notice"></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_writing'}" title="意见反馈" link to="/pages/notice/notice"></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'info'}" title="用户协议" link to="/pages/notice/notice"></uni-list-item>
