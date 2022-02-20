@@ -5,8 +5,9 @@
 			<view class="fill-box"></view>
 		</uni-nav-bar>
 		<view class="mainBody">
-			<view v-for="(item,index) in fishPondInfo">
-				<view class="pondCard" @click="toPondDetail(item.fishPondName,item.reportID)">
+			<!-- 鱼塘视图 -->
+			<view v-for="(item,index) in fishPondInfo" v-if="!deviceMode">
+				<view class="pondCard" @click="toPondDetail(item.fishPondName,item.reportID)" @longpress="toSetPond(item.reportID)">
 					<view class="card-title">
 						<view class="pond-name">
 							<uni-icons custom-prefix="iconfont" type="icon-fishpond" size="30" color="#129fdb"></uni-icons>
@@ -24,6 +25,8 @@
 					</view>
 				</view>
 			</view>
+			<!-- 设备视图 -->
+			
 		</view>
 		<uni-fab ref="fab" :pattern="fab.pattern" :popMenu="fab.popMenu" :horizontal="fab.horizontal"
 			:vertical="fab.vertical" :content="fab.content" :direction="fab.direction" @trigger="trigger"></uni-fab>
@@ -52,12 +55,19 @@
 						iconPath: '/static/fab_icons/yu.png',
 						selectedIconPath: '/static/fab_icons/yu-active.png',
 						active: false
+					},{
+						text:'切换视图',
+						iconPath: '/static/fab_icons/loop.png',
+						selectedIconPath: '/static/fab_icons/loop-active.png',
+						active: false
 					}],
 					horizontal: 'right',
 					vertical: 'bottom',
 					direction: 'horizontal'
 				},
-				fishPondInfo:[],
+				fishPondInfo:[],  //鱼塘信息列表
+				deviceMode:false, //设备视图
+				deviceInfo:[],    //设备信息列表
 			};
 		},
 		onLoad() {
@@ -74,6 +84,9 @@
 				})
 				return 
 			}
+			this.fab.content.forEach(e=>{
+				e.active = false
+			})
 			this.getPondInfo()
 		},
 		watch: {
@@ -95,10 +108,19 @@
 					return 
 				}
 				console.log(e);
+				
 				this.fab.content[e.index].active = true
-				uni.navigateTo({
-					url: '../pond/addFishPond/addFishPond'
-				})
+				if(e.index==0){
+					uni.navigateTo({
+						url: '../pond/addFishPond/addFishPond'
+					})
+					this.$refs.fab.close()
+					
+				}else{
+					
+					this.deviceMode = true
+				}
+				
 			},
 			// 获取鱼塘信息
 			async getPondInfo() {
@@ -175,6 +197,11 @@
 				}
 				return deviceHasAeratorList.map(e=>{					
 					return {pondRid:e.pondRid,aeratorsCount:tmp[`${e.rid}`]}
+				})
+			},
+			toSetPond(rid){
+				uni.navigateTo({
+					url: `../pond/setPond/setPond?pondRid=${rid}`
 				})
 			},
 			toPondDetail(pondName,rid){

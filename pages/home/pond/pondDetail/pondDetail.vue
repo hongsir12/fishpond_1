@@ -220,7 +220,7 @@
 						})
 						let insertLogParams = [{
 							report_type:'操作记录表',
-							report_data:{
+							report_data:{openID:this.$store.state.userAccount.openid,
 								operationLog:`添加了${type}:${value}`
 							},
 							report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
@@ -365,6 +365,7 @@
 					let insertParams = [{
 						report_type:'操作记录表',
 						report_data:{
+							openID:this.$store.state.userAccount.openid,
 							operationLog:`移除了增氧机:${this.aeratorInfoPanel.aeratorID}`
 						},
 						report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
@@ -405,6 +406,7 @@
 					let insertParams = [{
 						report_type:'操作记录表',
 						report_data:{
+							openID:this.$store.state.userAccount.openid,
 							operationLog:`${text}了增氧机:${this.aeratorInfoPanel.aeratorID}`
 						},
 						report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')

@@ -13,11 +13,11 @@
 		<view class="uni-flex uni-column">
 
 			<view class="my-wallet-panel uni-flex-item uni-flex uni-row">
-				<view class="uni-flex-item uni-flex uni-column">
+				<view class="uni-flex-item uni-flex uni-column" @click="toBalance">
 					<image style="width: 100rpx;height: 100rpx;border-radius: 50rpx;" src="https://s4.ax1x.com/2022/01/25/7b6TMR.png"></image>
 					<text>￥{{isAuth?balance.toFixed(2):'0.00'}}</text>
 				</view>
-				<view class="uni-flex-item uni-flex uni-column">
+				<view class="uni-flex-item uni-flex uni-column" @click="toRechargeLog">
 					<image style="width: 100rpx;height: 100rpx;border-radius: 50rpx;" src="https://s4.ax1x.com/2022/01/25/7b6zzd.png"></image>
 					<text>充值记录</text>
 				</view>
@@ -63,6 +63,9 @@
 		onLoad(options) {
 			// 判断用户是否授权
 			this.AuthorizedOrNot()
+			this.getBalance(this.$store.state.userAccount.openid)
+		},
+		onShow() {
 			this.getBalance(this.$store.state.userAccount.openid)
 		},
 		methods: {
@@ -155,7 +158,7 @@
 				}else{
 					this.$store.commit('updateUserWallet',{balance_id:queryRes.data.list[0].report_id})
 					let data = JSON.parse(queryRes.data.list[0].report_data)
-					this.balance = data.balance
+					this.balance = parseInt(data.balance)
 				}
 			},
 			
@@ -203,6 +206,18 @@
 						duration: 2000
 					})
 				}
+			},
+			// 前往余额页面
+			toBalance(){
+				uni.navigateTo({
+					url: `../balance/balance?openID=${this.$store.state.userAccount.openid}`
+				})
+			},
+			// 前往充值记录页面
+			toRechargeLog(){
+				uni.navigateTo({
+				url: `../rechargeLog/rechargeLog?openID=${this.$store.state.userAccount.openid}`
+				})
 			},
 
 		}
