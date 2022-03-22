@@ -15,7 +15,7 @@
 				<uni-forms-item required label="增氧机ID" name="aeratorID" labelAlign="left" labelWidth="200">
 					<picker @change="changeType($event,'aeratorIDIndex','aeratorID','aeratorIDArr')"
 						:range="aeratorIDArr">
-						<uni-easyinput type="text" v-model="formData.aeratorID" placeholder="请选择增氧机ID" />
+						<uni-easyinput  type="text" v-model="formData.aeratorID" placeholder="请选择增氧机ID" />
 					</picker>
 				</uni-forms-item>
 				<uni-forms-item required="" label="别名" name="aeratorName" labelAlign="left">
@@ -43,7 +43,11 @@
 					</picker>
 				</uni-forms-item>
 			</uni-forms>
-			<button @click="submit(deviceRid)">Submit</button>
+			<view class="btnBox">
+				<view class="btn"@click="submit(deviceRid)">
+					保存
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -137,6 +141,7 @@
 			changeType(e, typeIndex, formItem, arr) {
 				this[typeIndex] = e.target.value
 				this.formData[formItem] = this[arr][e.target.value]
+				console.log(this.formData);
 			},
 			// 触发提交表单
 			submit(deviceRid) {
@@ -217,7 +222,27 @@
 			border-top-right-radius: 21rpx;
 		}
 	}
+.btnBox {
+		width: 100%;
+		height: 100rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #f5f5f5;
 
+		.btn {
+			width: 96%;
+			height: 90rpx;
+			line-height: 90rpx;
+			text-align: center;
+			font-size: 40rpx;
+			color: #fff;
+			border-radius: 90rpx;
+			background: -webkit-linear-gradient(left, #fa6c9f 0%, #ffe140 80%, #ffe140 100%);
+			background: linear-gradient(to right, #fa6c9f 0%, #ffe140 80%, #ffe140 100%);
+		}
+		
+	}
 	/deep/ .uni-forms-item {
 		padding: 0 20rpx;
 

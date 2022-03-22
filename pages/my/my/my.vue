@@ -21,7 +21,7 @@
 					<image style="width: 100rpx;height: 100rpx;border-radius: 50rpx;" src="https://s4.ax1x.com/2022/01/25/7b6zzd.png"></image>
 					<text>充值记录</text>
 				</view>
-				<view class="uni-flex-item uni-flex uni-column">
+				<view class="uni-flex-item uni-flex uni-column" @click="toPurchaseLog">
 					<image style="width: 100rpx;height: 100rpx;border-radius: 50rpx;" src="https://s4.ax1x.com/2022/01/25/7b6xRH.png"></image>
 					<text>购买记录</text>
 				</view>
@@ -29,18 +29,21 @@
 
 
 			<uni-list>
-				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_repair'}" title="特约维修点" link to="/pages/notice/notice" ></uni-list-item>
+				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_repair'}" title="特约维修点" link to="/pages/my/repairShops/repairShops" ></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'settings-filled'}" title="近期设备操作" link to="/pages/my/operationLog/operationLog" ></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_service'}" title="联系客服" link to="/pages/notice/notice"></uni-list-item>
 				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'my_writing'}" title="意见反馈" link to="/pages/notice/notice"></uni-list-item>
-				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'info'}" title="用户协议" link to="/pages/notice/notice"></uni-list-item>
-				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'help'}" title="使用帮助" link to="/pages/notice/notice"></uni-list-item>
+				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'info'}" title="用户协议" link to="/pages/my/userAgreement/userAgreement"></uni-list-item>
+				<uni-list-item :show-extra-icon="true" :extra-icon="{color: '#1296db',size: '22',type: 'help'}" title="使用帮助" link to="/pages/my/handbook/handbook"></uni-list-item>
 			</uni-list>
 
 
 		</view>
-		<button v-if="isAuth" type="default" @click="logout">退出登录</button>
-
+		<view class="btnBox" v-if="isAuth">
+			<view class="btn" @click="logout">
+				退出登录
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -219,6 +222,12 @@
 				url: `../rechargeLog/rechargeLog?openID=${this.$store.state.userAccount.openid}`
 				})
 			},
+			// 前往购买记录页面
+			toPurchaseLog(){
+				uni.navigateTo({
+				url: `../PurchaseLog/PurchaseLog?openID=${this.$store.state.userAccount.openid}`
+				})
+			},
 
 		}
 	}
@@ -268,6 +277,28 @@
 			justify-content: center;
 			align-items: center;
 		}
+	}
+	
+	.btnBox {
+		width: 100%;
+		height: 100rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #f5f5f5;
+	
+		.btn {
+			width: 96%;
+			height: 90rpx;
+			line-height: 90rpx;
+			text-align: center;
+			font-size: 40rpx;
+			color: #fff;
+			border-radius: 90rpx;
+			background: -webkit-linear-gradient(left, #1FA2FF 0%, #12D8FA 50%, #1FA2FF 100%);
+			background: linear-gradient(to right, #1FA2FF 0%, #12D8FA 50%, #1FA2FF 100%);
+		}
+		
 	}
 
 </style>

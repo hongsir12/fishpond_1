@@ -681,3 +681,15 @@
 .uniui-my_oxygen:before{
 	content:"\e005"
 }
+
+.uniui-my_shutdown:before{
+	content:"\e006"
+}
+
+.uniui-my_timer:before{
+	content:"\e007"
+}
+
+.uniui-my_charts:before{
+	content:"\e008"
+}

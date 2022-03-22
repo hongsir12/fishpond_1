@@ -1199,6 +1199,27 @@ export default {
 		"font_class":"my_oxygen",
 		"unicode":"e005",
 		"unicode_decimal":58934
+	},
+	{
+		"icon_id":"24813802",
+		"name":"my_shutdown",
+		"font_class":"my_shutdown",
+		"unicode":"e006",
+		"unicode_decimal":58935
+	},
+	{
+		"icon_id":"24813803",
+		"name":"my_timer",
+		"font_class":"my_timer",
+		"unicode":"e007",
+		"unicode_decimal":58936
+	},
+	{
+		"icon_id":"24813804",
+		"name":"my_charts",
+		"font_class":"my_charts",
+		"unicode":"e008",
+		"unicode_decimal":58937
 	}
   ]
 }

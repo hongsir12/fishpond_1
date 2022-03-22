@@ -55,12 +55,14 @@
 						iconPath: '/static/fab_icons/yu.png',
 						selectedIconPath: '/static/fab_icons/yu-active.png',
 						active: false
-					},{
-						text:'切换视图',
-						iconPath: '/static/fab_icons/loop.png',
-						selectedIconPath: '/static/fab_icons/loop-active.png',
-						active: false
-					}],
+					}
+					// ,{
+					// 	text:'切换视图',
+					// 	iconPath: '/static/fab_icons/loop.png',
+					// 	selectedIconPath: '/static/fab_icons/loop-active.png',
+					// 	active: false
+					// },
+					],
 					horizontal: 'right',
 					vertical: 'bottom',
 					direction: 'horizontal'
@@ -138,6 +140,9 @@
 					
 					let fishPondInfo = queryRes.data.list.map(e=>{
 						let obj = JSON.parse(e.report_data).info
+						if(typeof obj=='string'){
+							obj = JSON.parse(obj)
+						}
 						obj.fishPondName = JSON.parse(e.report_data).fishPondName
 						obj.reportID = e.report_id
 						obj.runingAeratorCount = 0
@@ -201,7 +206,7 @@
 			},
 			toSetPond(rid){
 				uni.navigateTo({
-					url: `../pond/setPond/setPond?pondRid=${rid}`
+					url: `../pond/addFishPond/addFishPond?pondRid=${rid}`
 				})
 			},
 			toPondDetail(pondName,rid){

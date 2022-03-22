@@ -104,11 +104,57 @@
 						<uni-list-item title="输入电压检测" note="检测设备输入电压,超过或低于设定的范围都会主动断电" :show-switch="true"
 							:switchChecked="deviceInfo.inputVoltCheckStatus"
 							@switchChange="switchChange($event,deviceRid,'inputVoltCheckStatus')"></uni-list-item>
+						<uni-list-item showArrow>
+							<view slot="body" class="slot-box"
+								@click="showSpecialPopup(voltRange,'voltRange','voltRangePopup')">
+								<view class="box-left">
+									<text>电压监测范围</text>
+								</view>
+								<view class="box-right">
+									<text>{{deviceInfo.voltRange.min}}~{{deviceInfo.voltRange.max}}V</text>
+								</view>
+							</view>
+						</uni-list-item>
+						<uni-list-item title="溶解氧监测" note="监测溶解氧值,低于5mg/L时推送报警" :show-switch="true"
+							:switchChecked="deviceInfo.dissolvedOxygenCheckStatus"
+							@switchChange="switchChange($event,deviceRid,'dissolvedOxygenCheckStatus')"></uni-list-item>
 					</uni-list>
 				</uni-group>
+				<view class="btnBox">
+					<view class="btn" @click="removeDevice">
+						移除该设备
+					</view>
+				</view>
 			</view>
 			
 		</view>
+		
+		<uni-popup ref="removePopup" type="dialog">
+		    <uni-popup-dialog mode="base" title="温馨提示" content="确认移除该设备？" :duration="2000" @confirm="confirmRemoveDevice(deviceRid)"></uni-popup-dialog>
+		</uni-popup>
+		
+		<uni-popup ref="voltRangePopup" type="center">
+			<view class="voltRangePanel">
+				<view class="panel-title">
+					<text style="color:#909399;font-size: 16px;font-weight: 500;;">修改监测范围</text>
+				</view>
+				<view class="panel-content">
+					<uni-number-box :value="deviceInfo.voltRange.min" step="1" @change="changeRange($event,'min')">
+					</uni-number-box>~
+					<uni-number-box :value="deviceInfo.voltRange.max" step="1" @change="changeRange($event,'max')">
+					</uni-number-box>
+				</view>
+				<view class="panel-btngroup">
+					<view class="panel-btn" @click="closePopup('voltRangePopup')">
+						<text style="font-size: 16px;color:#333">取消</text>
+					</view>
+					<view class="panel-btn" style="border-left: #f0f0f0 solid 1px;"
+						@click="confirmPopup(voltRange,'voltRange','voltRangePopup')">
+						<text style="font-size: 16px;color: #007aff;">确定</text>
+					</view>
+				</view>
+			</view>
+		</uni-popup>
 		
 		<uni-popup ref="settingPopup" type="dialog" mask-background-color="rgba(0,0,0,0.3)">
 			<uni-popup-dialog mode="input" message="成功消息" :duration="2000" :title="popupContent.title"
@@ -126,6 +172,7 @@
 				deviceInfo:{}, //设备信息
 				fishPondArr:[], //全部鱼塘对象数组
 				outageAlarmSettingArr:['短信提示','电话通知','微信提示','全部方式'] ,//全部断电告警方式设置项
+				voltRange:{min:'',max:''}, //电压范围
 				// 对话弹出框内容
 				popupContent: {
 					title: '',
@@ -151,7 +198,7 @@
 						let obj = {name:JSON.parse(e.report_data).fishPondName,rid:e.report_id}
 						return obj
 					})
-					console.log(fishPondList);
+					// console.log(fishPondList);
 					this.fishPondArr = fishPondList
 				}
 			},
@@ -164,11 +211,14 @@
 				if(queryRes.code=='2000'){
 					let deviceInfo = JSON.parse(queryRes.data.list[0].report_data)
 					deviceInfo.inputVoltCheckStatus = typeof deviceInfo.inputVoltCheckStatus=='string'?JSON.parse(deviceInfo.inputVoltCheckStatus):deviceInfo.inputVoltCheckStatus
+					deviceInfo.voltRange = typeof deviceInfo.voltRange=='string'?JSON.parse(deviceInfo.voltRange):deviceInfo.voltRange
 					this.deviceInfo = deviceInfo
+					this.voltRange = deviceInfo.voltRange
 					console.log(this.deviceInfo);
 				}
 				
 			},
+			// 修改断电告警方式
 			async changeOutageAlarmSetting(e,deviceRid){
 				let index = parseInt(e.detail.value)
 				let newOutageAlarm = this.outageAlarmSettingArr[index]
@@ -226,6 +276,52 @@
 				}]
 				let updateRes = await uni.$http.post('apiUpdate', updateParams)
 			},
+			
+			// 显示特殊弹框:电压监测范围弹框
+			showSpecialPopup(val, prop, popup) {
+				this[prop] = _.cloneDeep(val)
+				this.$refs[popup].open()
+			},
+			// 更改电压范围
+			changeRange(val, prop) {
+				this.voltRange[prop] = val
+			},
+			// 特殊弹框提交确认事件：电压监测范围弹框
+			async confirmPopup(val, prop, popup) {
+				let updateParams = [{
+					report_id: this.deviceRid,
+					report_data: {
+						[prop]: val
+					}
+				}]
+				let updateRes = await uni.$http.post('apiUpdate', updateParams)
+				if(updateRes.code=='2000'){
+					console.log(val)
+					this[prop] = val
+					this.deviceInfo[prop] = val
+					this.$refs[popup].close()
+				}
+				
+				
+			},
+			// 关闭弹框
+			closePopup(popup) {
+				this.$refs[popup].close()
+			},
+			
+			removeDevice(){
+				this.$refs.removePopup.open()
+			},
+			async confirmRemoveDevice(deviceRid){
+				let deleteParams = [deviceRid]
+				let deleteRes = await uni.$http.post('apiDelete',deleteParams)
+				if(deleteRes.code=='2000'){
+					uni.navigateBack({
+						delta: 1
+					})
+				}
+				
+			},
 			back() {
 				uni.navigateBack({
 					delta: 1
@@ -250,6 +346,63 @@
 				justify-content: space-between;
 				width: 100%;
 			}
+		}
+	}
+	
+	.voltRangePanel{
+		width: 600rpx;
+		border-radius: 11px;
+		background-color: #fff;
+	
+		.panel-title {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			padding-top: 50rpx;
+		}
+	
+		.panel-content {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			padding: 40rpx;
+		}
+	
+		.panel-btngroup {
+			display: flex;
+			flex-direction: row;
+			border-top-color: #f5f5f5;
+			border-top-style: solid;
+			border-top-width: 1px;
+	
+			.panel-btn {
+				display: flex;
+				flex: 1;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				height: 90rpx;
+			}
+		}
+	}
+	.btnBox{
+		width: 100%;
+		height: 100rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #f5f5f5;
+		.btn{
+			width: 96%;
+			height: 90rpx;
+			line-height: 90rpx;
+			text-align: center;
+			font-size: 40rpx;
+			color: #fff;
+			border-radius: 90rpx;
+			background: -webkit-linear-gradient(left, #fa6c9f 0%, #ffe140 80%, #ffe140 100%);
+			background: linear-gradient(to right, #fa6c9f 0%, #ffe140 80%, #ffe140 100%);
 		}
 	}
 </style>

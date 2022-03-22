@@ -90,6 +90,7 @@
 						<uni-list-item title="监测运行电流" note="监测设备运行电流,超过或低于设定的范围都会主动提醒" :show-switch="true" :switchChecked="aeratorInfoPanel.ampereMonitorStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'ampereMonitorStatus')" ></uni-list-item>
 						<uni-list-item title="过流停机" note="如果开启过流停机,当运行电流超过监测范围上限时,会自动关闭该增氧机" :show-switch="true" :switchChecked="aeratorInfoPanel.overCurrentShutdownStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'overCurrentShutdownStatus')"></uni-list-item>
 						<uni-list-item title="停机警告" note="运行电流低于设定值时,会主动电话告警" :show-switch="true" :switchChecked="aeratorInfoPanel.shutdownAlarmStatus"  @switchChange="switchChange($event,aeratorInfoPanel.aeratorRid,'shutdownAlarmStatus')" ></uni-list-item>
+						<uni-list-item title="图表曲线" clickable  @click="toChart()" ></uni-list-item>
 						<!-- <uni-list-item>
 							<view slot="body" class="slot-box uni-inline-item">
 								<view>过流停机</view>
@@ -111,15 +112,15 @@
 							<text>设置</text>
 						</view>
 						<view class="btn-item" @click="toSetAerator(aeratorInfoPanel.aeratorRid,1)">
-							<uni-icons type="gear-filled" size="30"></uni-icons>
-							<text>定时开关</text>
+							<uni-icons type="my_timer" size="30"></uni-icons>
+							<text style="margin-left: 10rpx;">定时开关</text>
 						</view>
 						<view class="btn-item" v-if="!aeratorInfoPanel.isOnline" style="flex:1;background-color: #18BC37;color: #ffffff;" @click="changOnline(aeratorInfoPanel.aeratorRid,aeratorInfoPanel.isOnline)">
-							<uni-icons type="gear" size="30"></uni-icons>
+							<uni-icons type="my_shutdown" size="30" ></uni-icons>
 							<text>立即启动</text>
 						</view>
 						<view class="btn-item" v-if="aeratorInfoPanel.isOnline" style="flex:1;background-color: #ee0a24;color: #ffffff;"  @click="changOnline(aeratorInfoPanel.aeratorRid,aeratorInfoPanel.isOnline)">
-							<uni-icons type="gear" size="30"></uni-icons>
+							<uni-icons type="clear" size="30" color="#fff"></uni-icons>
 							<text>立即停止</text>
 						</view>
 					</view>
@@ -160,6 +161,11 @@
 			this.showAeratorInfo(this.currentSettingAeratorRid)
 		},
 		methods: {
+			toChart(){
+				uni.navigateTo({
+					url: `../../ucharts/testCharts/testCharts`
+				})
+			},
 			back() {
 				uni.navigateBack({
 					delta: 1
@@ -208,6 +214,8 @@
 							serviceHotline:'13510424336', //服务热线
 							outageAlarmSetting:'未设置',  //断电告警设置
 							inputVoltCheckStatus:false,  //输入电压检测
+							voltRange:{min:0,max:0},      // 电压监测范围
+							dissolvedOxygenCheckStatus:false, //溶解氧监测
 							
 						},
 						report_time: this.$moment().format('YYYY-MM-DD HH:mm:ss'),
