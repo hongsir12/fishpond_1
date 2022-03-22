@@ -48,11 +48,6 @@
 						text: '加入购物车',
 					 backgroundColor: '#ff0000',
 						color: '#fff'
-					},
-					{
-						text: '立即购买',
-						backgroundColor: '#ffa200',
-						color: '#fff'
 					}
 				]
 			}
