@@ -120,6 +120,18 @@
 							@switchChange="switchChange($event,deviceRid,'dissolvedOxygenCheckStatus')"></uni-list-item>
 					</uni-list>
 				</uni-group>
+				<qiun-title-bar title="溶解氧值" />
+				<view class="charts-box">
+					<qiun-data-charts type="demotype" canvasId="oxygenDataId"
+						:opts="{enableScroll:true,dataLabel:false,xAxis:{scrollShow:true,itemCount:5,disableGrid:true},yAxis:{max:8,min:4}}"
+						:chartData="oxygenData" :ontouch="true" :canvas2d="false" />
+				</view>
+				<qiun-title-bar title="水温值" />
+				<view class="charts-box">
+					<qiun-data-charts type="demotype" canvasId="tempDataId"
+						:opts="{enableScroll:true,dataLabel:false,xAxis:{scrollShow:true,itemCount:5,disableGrid:true},yAxis:{max:27,min:17}}"
+						:chartData="tempData" :ontouch="true" :canvas2d="false" />
+				</view>
 				<view class="btnBox">
 					<view class="btn" @click="removeDevice">
 						移除该设备
@@ -165,6 +177,7 @@
 </template>
 
 <script>
+	import uCharts from '@/components/u-charts/u-charts.js';
 	export default {
 		data() {
 			return {
@@ -173,6 +186,28 @@
 				fishPondArr:[], //全部鱼塘对象数组
 				outageAlarmSettingArr:['短信提示','电话通知','微信提示','全部方式'] ,//全部断电告警方式设置项
 				voltRange:{min:'',max:''}, //电压范围
+				// 溶解氧
+				oxygenData: {
+					"categories": ["1时", "2时", "3时", "4时", "5时", "6时", "7时", "8时", "9时", "10时", "11时", "12时", "13时", "14时", "15时", "16时",
+						"17时", "18时", "19时", "20时", "21时", "22时", "23时", "24时"
+					],
+					"series": [{
+							"name": "溶氧值(mg/L)",
+							"data": [5.3, 5.3, 5.5, 5.4, 5.2, 5.2, 5.1, 5.1, 5.3, 5.3, 5.6, 5.7, 5.7,5.4, 5.5, 5.5,
+								5.7,5.7, 6.1,6.0, 5.8, 6.2, 5.7, 5.3]
+						}]
+				},
+				// 水温
+				tempData: {
+					"categories": ["1时", "2时", "3时", "4时", "5时", "6时", "7时", "8时", "9时", "10时", "11时", "12时", "13时", "14时", "15时", "16时",
+						"17时", "18时", "19时", "20时", "21时", "22时", "23时", "24时"
+					],
+					"series": [{
+							"name": "水温(℃)",
+							"data": [18.2, 18.2, 18.3, 18.3, 18.5, 18.9, 19.1, 19.2, 20.3, 20.7, 20.9, 21.3, 21.6,21.9, 22.1, 21.4,
+								21.1,20.4, 20.4,19.5, 19.2, 19.2, 18.9, 18.6]
+						}]
+				},
 				// 对话弹出框内容
 				popupContent: {
 					title: '',
@@ -345,6 +380,10 @@
 				display: flex;
 				justify-content: space-between;
 				width: 100%;
+			}
+			.charts-box {
+				width: 100%;
+				height: 300px;
 			}
 		}
 	}

@@ -23,6 +23,16 @@
 								</view>
 							</view>
 						</uni-list-item>
+						<uni-list-item>
+							<view slot="body" class="slot-box">
+								<view class="box-left">
+									<text>功率</text>
+								</view>
+								<view class="box-right">
+									<text>{{setting.aeratorPower}}</text>
+								</view>
+							</view>
+						</uni-list-item>
 						<uni-list-item title="监测运行电流" note="监测设备运行电流,超过或低于设定的范围都会主动提醒" :show-switch="true"
 							:switchChecked="setting.ampereMonitorStatus"
 							@switchChange="switchChange($event,aeratorRid,'ampereMonitorStatus')"></uni-list-item>
@@ -51,6 +61,16 @@
 								</view>
 								<view class="box-right">
 									<text>{{setting.shutdownAlarmVal}}</text>
+								</view>
+							</view>
+						</uni-list-item>
+						<uni-list-item showArrow>
+							<view slot="body" class="slot-box" @click="showPopup('修改位置','请输入新位置','aeratorPosition')">
+								<view class="box-left">
+									<text>位置</text>
+								</view>
+								<view class="box-right">
+									<text>{{setting.aeratorPosition}}</text>
 								</view>
 							</view>
 						</uni-list-item>

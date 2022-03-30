@@ -3,7 +3,7 @@
 		<uni-nav-bar backgroundColor="#1296db" height="148rpx" :border="false" fixed>
 			<view class="navbar-title" @click="back">
 				<uni-icons type="back" color="#ffffff" size="22"></uni-icons>
-				添加收货地址
+				{{rid?'修改收货地址':'添加收货地址'}}
 			</view>
 		</uni-nav-bar>
 		<view class="mainBody">
@@ -26,6 +26,9 @@
 			</view>
 			<view class="submit" @click="submit">
 				保存
+			</view>
+			<view v-if="rid" class="submit" style="background: #E43D33;margin-top: 20rpx;" @click="remove(rid)">
+				移除收货地址
 			</view>
 		</view>
 	</view>
@@ -145,6 +148,15 @@
 				}).catch(err => {
 					console.log('表单错误信息：', err);
 				})
+			},
+			async remove(rid){
+				let deleteParams = [rid]
+				let deleteRes = await uni.$http.post('apiDelete',deleteParams)
+				if(deleteRes.code=='2000'){
+					uni.navigateBack({
+						delta: 1
+					})
+				}
 			},
 			back() {
 				uni.navigateBack({

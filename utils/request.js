@@ -19,6 +19,5 @@ $http.beforeRequest = function(options) {
 }
 // 响应拦截器
 $http.afterRequest = function(res) {
-	// uni.hideLoading()
 	return res.data
 }

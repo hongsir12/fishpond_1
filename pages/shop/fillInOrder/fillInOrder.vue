@@ -52,10 +52,10 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog mode="base" title="温馨提示" content="确认购买？" :duration="2000"
-				 @confirm="confirmPopup(balancedGoodsList,totalCount)">
+				@confirm="confirmPopup(balancedGoodsList,totalCount)">
 			</uni-popup-dialog>
 		</uni-popup>
 	</view>
@@ -69,10 +69,10 @@
 				balancedGoodsRid: [],
 				balancedGoodsList: [],
 				totalCount: 0,
-				defaultAddress:{
-					name:'',
-					address:'',
-					phone:'',
+				defaultAddress: {
+					name: '请选择收货地址',
+					address: '',
+					phone: '',
 				}
 			}
 		},
@@ -83,20 +83,23 @@
 			this.getDefaultAddress()
 		},
 		onShow() {
-			
+			// this.getDefaultAddress()
 		},
 		methods: {
-			async getDefaultAddress(){
+			async getDefaultAddress() {
 				let queryParams = [{
-					report_type:'用户收货地址表',
-					conditions:{openID:this.$store.state.userAccount.openid,defaultAddress:'true'}
+					report_type: '用户收货地址表',
+					conditions: {
+						openID: this.$store.state.userAccount.openid,
+						defaultAddress: 'true'
+					}
 				}]
-				let queryRes = await uni.$http.post('apiQuery',queryParams)
-				if(queryRes.code=='2000'){
+				let queryRes = await uni.$http.post('apiQuery', queryParams)
+				if (queryRes.code == '2000') {
 					let data = JSON.parse(queryRes.data.list[0].report_data)
 					this.defaultAddress = data
-					
 				}
+				
 			},
 			// 获得选中的购物车商品
 			async getBalancedGoods(balancedGoodsRid) {
@@ -120,9 +123,9 @@
 			toShippingAddress() {
 				uni.navigateTo({
 					url: `/pages/shop/shippingAddress/shippingAddress`,
-					events:{
-						changeAddress:(data)=>{
-							console.log('切换的地址',data,this.defaultAddress);
+					events: {
+						changeAddress: (data) => {
+							console.log('切换的地址', data, this.defaultAddress);
 							this.defaultAddress.name = data.name
 							this.defaultAddress.address = data.address
 							this.defaultAddress.phone = data.phone
@@ -130,52 +133,63 @@
 					}
 				})
 			},
-			submitOrder(){
+			submitOrder() {
 				this.$refs.popup.open()
 			},
-			async confirmPopup(balancedGoodsList,totalCount){
-				console.log(balancedGoodsList,totalCount);
+			async confirmPopup(balancedGoodsList, totalCount) {
+				console.log(balancedGoodsList, totalCount);
 				let queryParams = [{
-					report_type:'用户余额表',
-					conditions:{openID:this.$store.state.userAccount.openid}
+					report_type: '用户余额表',
+					conditions: {
+						openID: this.$store.state.userAccount.openid
+					}
 				}]
-				let {data} = await uni.$http.post('apiQuery',queryParams)
+				let {
+					data
+				} = await uni.$http.post('apiQuery', queryParams)
 				let balance = +JSON.parse(data.list[0].report_data).balance
-				let newBalance = balance-this.totalCount
+				let newBalance = balance - this.totalCount
 				let balanceRid = data.list[0].report_id
-				if(newBalance<0){					
+				if (newBalance < 0) {
 					uni.showToast({
 						title: `余额不足`,
 						icon: 'error'
 					})
 					return
-					
+
 				}
-				let insertParams = balancedGoodsList.map(item=>{
+				let insertParams = balancedGoodsList.map(item => {
 					let obj = {
-						report_type:'用户购物记录表',
-						report_Data:{openID:this.$store.state.userAccount.openid,goodsTitle:item.goodsTitle,goodsNum:item.goodsNum,goodsPrice:item.goodsPrice},
-						report_time:this.$moment().format('YYYY-MM-DD HH:mm:ss')
+						report_type: '用户购物记录表',
+						report_Data: {
+							openID: this.$store.state.userAccount.openid,
+							goodsTitle: item.goodsTitle,
+							goodsNum: item.goodsNum,
+							goodsPrice: item.goodsPrice
+						},
+						report_time: this.$moment().format('YYYY-MM-DD HH:mm:ss')
 					}
 					return obj
 				})
-				let insertRes = await uni.$http.post('apiInsert',insertParams)
-				if(insertRes.code=='2000'){
+				let insertRes = await uni.$http.post('apiInsert', insertParams)
+				if (insertRes.code == '2000') {
 					let deleteParams = this.balancedGoodsRid
-					let deleteRes = await uni.$http.post('apiDelete',deleteParams)
-					if(deleteRes.code=='2000'){
-						
+					let deleteRes = await uni.$http.post('apiDelete', deleteParams)
+					if (deleteRes.code == '2000') {
+
 						let updateParams = [{
-							report_id:balanceRid,
-							report_data:{balance:newBalance}
+							report_id: balanceRid,
+							report_data: {
+								balance: newBalance
+							}
 						}]
-						let updateRes = await uni.$http.post('apiUpdate',updateParams)
-						if(updateRes.code=='2000'){
+						let updateRes = await uni.$http.post('apiUpdate', updateParams)
+						if (updateRes.code == '2000') {
 							uni.navigateBack({
 								delta: 3
 							})
 						}
-						
+
 					}
 				}
 			},

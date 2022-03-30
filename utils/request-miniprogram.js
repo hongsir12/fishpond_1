@@ -61,18 +61,18 @@ class Request {
         data: this.data,
         header: this.header,
         success: (res) => { 
-			// 请求完成以后做一些事情(响应拦截)
+			// 请求成功以后做一些事情(响应拦截)
 			this.afterRequest && typeof this.afterRequest === 'function' && this.afterRequest(res)
 			res = this.afterRequest(res)
 			resolve(res) 
 			},
+		// 请求失败后做的事情
         fail: (err) => { reject(err) },
-        complete: (res) => {
-          
-        }
+		// 不论请求成功与否都做些事情
+        complete: (res) => {}
       })
     })
   }
 }
-
+// 将Request的实例化对象$http暴露出去
 export const $http = new Request()
