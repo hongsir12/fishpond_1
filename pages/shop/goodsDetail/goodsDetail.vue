@@ -61,6 +61,7 @@
 			this.getCartInfo(this.openid)
 		},
 		methods: {
+			// 获取商品信息
 			async getGoodDetail(rid) {
 				let queryParams = [{
 					report_id: rid
